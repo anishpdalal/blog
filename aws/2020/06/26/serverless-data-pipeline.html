@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Serverless Data Pipeline with AWS Step Functions | Anish Dalal</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Serverless Data Pipeline with AWS Step Functions" />
+<meta name="author" content="Anish Dalal" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorial of Step Functions Python SDK to build serverless data pipelines" />
+<meta property="og:description" content="Tutorial of Step Functions Python SDK to build serverless data pipelines" />
+<link rel="canonical" href="https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html" />
+<meta property="og:url" content="https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html" />
+<meta property="og:site_name" content="Anish Dalal" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-06-26T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Anish Dalal"},"description":"Tutorial of Step Functions Python SDK to build serverless data pipelines","mainEntityOfPage":{"@type":"WebPage","@id":"https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html"},"@type":"BlogPosting","url":"https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html","headline":"Serverless Data Pipeline with AWS Step Functions","dateModified":"2020-06-26T00:00:00-05:00","datePublished":"2020-06-26T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://anishdalal.me/feed.xml" title="Anish Dalal" /><link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Serverless Data Pipeline with AWS Step Functions | Anish Dalal</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Serverless Data Pipeline with AWS Step Functions" />
+<meta name="author" content="Anish Dalal" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tutorial of Step Functions Python SDK to build serverless data pipelines" />
+<meta property="og:description" content="Tutorial of Step Functions Python SDK to build serverless data pipelines" />
+<link rel="canonical" href="https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html" />
+<meta property="og:url" content="https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html" />
+<meta property="og:site_name" content="Anish Dalal" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-06-26T00:00:00-05:00" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Anish Dalal"},"description":"Tutorial of Step Functions Python SDK to build serverless data pipelines","mainEntityOfPage":{"@type":"WebPage","@id":"https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html"},"@type":"BlogPosting","url":"https://anishdalal.me/aws/2020/06/26/serverless-data-pipeline.html","headline":"Serverless Data Pipeline with AWS Step Functions","dateModified":"2020-06-26T00:00:00-05:00","datePublished":"2020-06-26T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://anishdalal.me/feed.xml" title="Anish Dalal" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/">Anish Dalal</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/search/">Search</a><a class="page-link" href="/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Serverless Data Pipeline with AWS Step Functions</h1><p class="page-description">Tutorial of Step Functions Python SDK to build serverless data pipelines</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-06-26T00:00:00-05:00" itemprop="datePublished">
+        Jun 26, 2020
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Anish Dalal</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      5 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/categories/#AWS">AWS</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/anishpdalal/blog/tree/master/_notebooks/2020-06-26-serverless-data-pipeline.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/anishpdalal/blog/master?filepath=_notebooks%2F2020-06-26-serverless-data-pipeline.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/anishpdalal/blog/blob/master/_notebooks/2020-06-26-serverless-data-pipeline.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Quick-Summary">Quick Summary </a></li>
+<li class="toc-entry toc-h2"><a href="#Requirements">Requirements </a></li>
+<li class="toc-entry toc-h2"><a href="#Create-IAM-Role-and-Policy-for-Executing-Step-Functions">Create IAM Role and Policy for Executing Step Functions </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Create-IAM-Role-for-this-tutorial">Create IAM Role for this tutorial </a></li>
+<li class="toc-entry toc-h3"><a href="#Create-Lambda-Execution-Policy">Create Lambda Execution Policy </a></li>
+<li class="toc-entry toc-h3"><a href="#Attach-Policy-to-Role">Attach Policy to Role </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Building-a-Toy-Data-Pipeline-with-Step-Functions-SDK">Building a Toy Data Pipeline with Step Functions SDK </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Create-Filtering-Step-Lambda-Function">Create Filtering Step Lambda Function </a></li>
+<li class="toc-entry toc-h3"><a href="#Create-Averaging-Step-Lambda-Function">Create Averaging Step Lambda Function </a></li>
+<li class="toc-entry toc-h3"><a href="#Create-Decision-Step-Lambda-Function">Create Decision Step Lambda Function </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Orchestrating-Lambda-Functions-with-Step-Functions-SDK">Orchestrating Lambda Functions with Step Functions SDK </a>
+<ul>
+<li class="toc-entry toc-h3"><a href="#Filter-Step">Filter Step </a></li>
+<li class="toc-entry toc-h3"><a href="#Average-Step">Average Step </a></li>
+<li class="toc-entry toc-h3"><a href="#Decision-Step">Decision Step </a></li>
+<li class="toc-entry toc-h3"><a href="#Chain-average-step-and-decision-step">Chain average step and decision step </a></li>
+<li class="toc-entry toc-h3"><a href="#Execute-Pipeline">Execute Pipeline </a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h2"><a href="#Clean-Up">Clean Up </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-06-26-serverless-data-pipeline.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Quick-Summary">
+<a class="anchor" href="#Quick-Summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quick Summary<a class="anchor-link" href="#Quick-Summary"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Data Scientists don't want to do infrastructure. Small teams and startups cannot manage complicated data infrastructure at the expense of shipping products. AWS Step Functions allow engineers and data scientists to deploy data pipelines without overhead costs such as managing continously running servers. Step functions orchestrate AWS services like ECS, Lambda, SageMaker, DynamoDB, etc. into complex workflows and DAGs. The Step Functions Python SDK simplifies development with Step Functions. This post explains how to use the SDK and its core abstractions to construct a toy example of a DAG all from a Jupyter notebook! Many of the concepts demonstrated in this tutorial can be used to create complex and production grade data/ML pipelines.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Requirements">
+<a class="anchor" href="#Requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requirements<a class="anchor-link" href="#Requirements"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>AWS Account </li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/userguide/inst">Install AWS CLI</a></li>
+<li><a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html">Configure AWS CLI</a></li>
+</ul>
+<p>This tutorial assumes some familiarity with boto3, AWS Step Functions, and AWS Lambda but is not necessary to run the notebook. Familiarity with <a href="https://states-language.net/spec.html">Amazon State Machine Language</a> will also be helpful.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="o">!{</span>sys.executable<span class="o">}</span> -m pip install --upgrade stepfunctions
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-IAM-Role-and-Policy-for-Executing-Step-Functions">
+<a class="anchor" href="#Create-IAM-Role-and-Policy-for-Executing-Step-Functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create IAM Role and Policy for Executing Step Functions<a class="anchor-link" href="#Create-IAM-Role-and-Policy-for-Executing-Step-Functions"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="n">iam_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'iam'</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-IAM-Role-for-this-tutorial">
+<a class="anchor" href="#Create-IAM-Role-for-this-tutorial" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create IAM Role for this tutorial<a class="anchor-link" href="#Create-IAM-Role-for-this-tutorial"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We need to tell AWS that the step functions and lambda services can assume the IAM role we create.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">trust_relationship_policy_doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+  <span class="s2">"Version"</span><span class="p">:</span> <span class="s2">"2012-10-17"</span><span class="p">,</span>
+  <span class="s2">"Statement"</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="s2">"Effect"</span><span class="p">:</span> <span class="s2">"Allow"</span><span class="p">,</span>
+        <span class="s2">"Principal"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Service"</span><span class="p">:</span> <span class="s2">"states.amazonaws.com"</span><span class="p">},</span>
+        <span class="s2">"Action"</span><span class="p">:</span> <span class="s2">"sts:AssumeRole"</span>
+      <span class="p">},</span>
+      <span class="p">{</span>
+        <span class="s2">"Effect"</span><span class="p">:</span> <span class="s2">"Allow"</span><span class="p">,</span>
+        <span class="s2">"Principal"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"Service"</span><span class="p">:</span> <span class="s2">"lambda.amazonaws.com"</span><span class="p">},</span>
+        <span class="s2">"Action"</span><span class="p">:</span> <span class="s2">"sts:AssumeRole"</span>
+      <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">role_name</span> <span class="o">=</span> <span class="s1">'StepFunctionsTutorialExecutionRole'</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">create_role_response</span> <span class="o">=</span> <span class="n">iam_client</span><span class="o">.</span><span class="n">create_role</span><span class="p">(</span>
+        <span class="n">RoleName</span><span class="o">=</span><span class="n">role_name</span><span class="p">,</span>
+        <span class="n">AssumeRolePolicyDocument</span><span class="o">=</span><span class="n">trust_relationship_policy_doc</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">role_name</span><span class="si">}</span><span class="s2"> IAM Role has already been created"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-Lambda-Execution-Policy">
+<a class="anchor" href="#Create-Lambda-Execution-Policy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Lambda Execution Policy<a class="anchor-link" href="#Create-Lambda-Execution-Policy"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lambda_execution_policy_doc</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+    <span class="s2">"Version"</span><span class="p">:</span> <span class="s2">"2012-10-17"</span><span class="p">,</span>
+    <span class="s2">"Statement"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">"Effect"</span><span class="p">:</span> <span class="s2">"Allow"</span><span class="p">,</span>
+            <span class="s2">"Action"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="s2">"lambda:InvokeFunction"</span>
+            <span class="p">],</span>
+            <span class="s2">"Resource"</span><span class="p">:</span> <span class="s2">"*"</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+
+<span class="n">policy_name</span> <span class="o">=</span> <span class="s1">'StepFunctionsTutorialExecutionPolicy'</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">create_policy_response</span> <span class="o">=</span> <span class="n">iam_client</span><span class="o">.</span><span class="n">create_policy</span><span class="p">(</span>
+        <span class="n">PolicyName</span><span class="o">=</span><span class="n">policy_name</span><span class="p">,</span>
+        <span class="n">PolicyDocument</span><span class="o">=</span><span class="n">lambda_execution_policy_doc</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">policy_name</span><span class="si">}</span><span class="s2"> Policy has already been created"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Attach-Policy-to-Role">
+<a class="anchor" href="#Attach-Policy-to-Role" aria-hidden="true"><span class="octicon octicon-link"></span></a>Attach Policy to Role<a class="anchor-link" href="#Attach-Policy-to-Role"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Attaching the policy doc to the IAM role gives any resource associated with IAM role permission to run a Lambda function.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tutorial_policy</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">"PolicyName"</span><span class="p">]</span> <span class="o">==</span> <span class="n">policy_name</span><span class="p">,</span> <span class="n">iam_client</span><span class="o">.</span><span class="n">list_policies</span><span class="p">()[</span><span class="s2">"Policies"</span><span class="p">]))</span>
+<span class="n">policy_arn</span> <span class="o">=</span> <span class="n">tutorial_policy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">"Arn"</span><span class="p">]</span>
+<span class="n">attach_response</span> <span class="o">=</span> <span class="n">iam_client</span><span class="o">.</span><span class="n">attach_role_policy</span><span class="p">(</span><span class="n">RoleName</span><span class="o">=</span><span class="n">role_name</span><span class="p">,</span> <span class="n">PolicyArn</span><span class="o">=</span><span class="n">policy_arn</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Building-a-Toy-Data-Pipeline-with-Step-Functions-SDK">
+<a class="anchor" href="#Building-a-Toy-Data-Pipeline-with-Step-Functions-SDK" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building a Toy Data Pipeline with Step Functions SDK<a class="anchor-link" href="#Building-a-Toy-Data-Pipeline-with-Step-Functions-SDK"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Our pipeline will consist of the following components:</p>
+<ol>
+<li>Input -&gt; 2 lists of 100 randomly generated numbers</li>
+<li>Filtering Step -&gt; Each list will be filtered</li>
+<li>Averaging Step -&gt; Each filtered list will be averaged</li>
+<li>Decision Step -&gt; Each average either undergoes a square root operation or is left alone</li>
+</ol>
+<p>Each step is performed in a Lambda function.</p>
+<p>Example:</p>
+<p>input: [[0,5,-3...,174], [-2,5,7,...34]]</p>
+<p>output: [-2,5.7]</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Helper Function to encode python file into byte string for creating Lambda functions</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
+
+<span class="n">lambda_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">'lambda'</span><span class="p">)</span>
+<span class="n">role_arn</span> <span class="o">=</span> <span class="n">iam_client</span><span class="o">.</span><span class="n">get_role</span><span class="p">(</span><span class="n">RoleName</span><span class="o">=</span><span class="n">role_name</span><span class="p">)[</span><span class="s2">"Role"</span><span class="p">][</span><span class="s2">"Arn"</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">encode_file_to_bytes</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+    <span class="n">buf</span> <span class="o">=</span> <span class="n">BytesIO</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">z</span><span class="p">:</span> 
+        <span class="n">z</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="n">buf</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">buf</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-Filtering-Step-Lambda-Function">
+<a class="anchor" href="#Create-Filtering-Step-Lambda-Function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Filtering Step Lambda Function<a class="anchor-link" href="#Create-Filtering-Step-Lambda-Function"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> filter_step.py
+<span class="k">def</span> <span class="nf">filter_numbers</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">"items"</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">item</span> <span class="o">&lt;</span> <span class="n">event</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">]]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting filter_step.py
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filter_function_name</span> <span class="o">=</span> <span class="s2">"filter-numbers"</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">filter_func_response</span> <span class="o">=</span> <span class="n">lambda_client</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span>
+        <span class="n">FunctionName</span><span class="o">=</span><span class="n">filter_function_name</span><span class="p">,</span>
+        <span class="n">Runtime</span><span class="o">=</span><span class="s1">'python3.8'</span><span class="p">,</span>
+        <span class="n">Role</span><span class="o">=</span><span class="n">role_arn</span><span class="p">,</span>
+        <span class="n">Handler</span><span class="o">=</span><span class="s1">'filter_step.filter_numbers'</span><span class="p">,</span>
+        <span class="n">Code</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"ZipFile"</span><span class="p">:</span> <span class="n">encode_file_to_bytes</span><span class="p">(</span><span class="s2">"filter_step.py"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Lambda function </span><span class="si">{</span><span class="n">filter_function_name</span><span class="si">}</span><span class="s2"> has already been created"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Lambda function filter-numbers has already been created
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-Averaging-Step-Lambda-Function">
+<a class="anchor" href="#Create-Averaging-Step-Lambda-Function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Averaging Step Lambda Function<a class="anchor-link" href="#Create-Averaging-Step-Lambda-Function"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> average_step.py
+<span class="kn">import</span> <span class="nn">statistics</span>
+<span class="k">def</span> <span class="nf">average_numbers</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">statistics</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">"items"</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting average_step.py
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">average_function_name</span> <span class="o">=</span> <span class="s2">"average-numbers"</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">average_func_response</span> <span class="o">=</span> <span class="n">lambda_client</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span>
+        <span class="n">FunctionName</span><span class="o">=</span><span class="n">average_function_name</span><span class="p">,</span>
+        <span class="n">Runtime</span><span class="o">=</span><span class="s1">'python3.8'</span><span class="p">,</span>
+        <span class="n">Role</span><span class="o">=</span><span class="n">role_arn</span><span class="p">,</span>
+        <span class="n">Handler</span><span class="o">=</span><span class="s1">'average_step.average_numbers'</span><span class="p">,</span>
+        <span class="n">Code</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"ZipFile"</span><span class="p">:</span> <span class="n">encode_file_to_bytes</span><span class="p">(</span><span class="s2">"average_step.py"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Lambda function </span><span class="si">{</span><span class="n">average_function_name</span><span class="si">}</span><span class="s2"> has already been created"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-Decision-Step-Lambda-Function">
+<a class="anchor" href="#Create-Decision-Step-Lambda-Function" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create Decision Step Lambda Function<a class="anchor-link" href="#Create-Decision-Step-Lambda-Function"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> decision_step.py
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="k">def</span> <span class="nf">sqrt_number</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">"output"</span><span class="p">:</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">"item"</span><span class="p">])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting decision_step.py
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sqrt_function_name</span> <span class="o">=</span> <span class="s2">"sqrt-number"</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">sqrt_response</span> <span class="o">=</span> <span class="n">lambda_client</span><span class="o">.</span><span class="n">create_function</span><span class="p">(</span>
+        <span class="n">FunctionName</span><span class="o">=</span><span class="n">sqrt_function_name</span><span class="p">,</span>
+        <span class="n">Runtime</span><span class="o">=</span><span class="s1">'python3.8'</span><span class="p">,</span>
+        <span class="n">Role</span><span class="o">=</span><span class="n">role_arn</span><span class="p">,</span>
+        <span class="n">Handler</span><span class="o">=</span><span class="s1">'decision_step.sqrt_number'</span><span class="p">,</span>
+        <span class="n">Code</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"ZipFile"</span><span class="p">:</span> <span class="n">encode_file_to_bytes</span><span class="p">(</span><span class="s2">"decision_step.py"</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Lambda function </span><span class="si">{</span><span class="n">sqrt_function_name</span><span class="si">}</span><span class="s2"> has already been created"</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Orchestrating-Lambda-Functions-with-Step-Functions-SDK">
+<a class="anchor" href="#Orchestrating-Lambda-Functions-with-Step-Functions-SDK" aria-hidden="true"><span class="octicon octicon-link"></span></a>Orchestrating Lambda Functions with Step Functions SDK<a class="anchor-link" href="#Orchestrating-Lambda-Functions-with-Step-Functions-SDK"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">stepfunctions</span>
+<span class="kn">from</span> <span class="nn">stepfunctions.steps</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">stepfunctions.workflow</span> <span class="kn">import</span> <span class="n">Workflow</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A Step Functions pipeline is a series of steps or "states" chained together. Within the toy example, each state is responsible for executing a specific Lambda function via a Lambda Step. Step Functions allows a developer to nest sub-pipelines within a state and make complicated workflows.</p>
+<p>Here are a couple of resources to help the reader understand the Amazon State Machine Language syntax used for defining inputs and outputs for each step of the pipeline.</p>
+<ul>
+<li><a href="https://states-language.net/spec.html">https://states-language.net/spec.html</a></li>
+<li><a href="https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html">https://docs.aws.amazon.com/step-functions/latest/dg/concepts-input-output-filtering.html</a></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/images/copied_from_nb/step-functions-dag.png" alt=""></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Filter-Step">
+<a class="anchor" href="#Filter-Step" aria-hidden="true"><span class="octicon octicon-link"></span></a>Filter Step<a class="anchor-link" href="#Filter-Step"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This is the first step in our toy pipeline. It's using a <a href="https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-parallel-state.html">Parallel State</a> so the branches will be executed simulatenously.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">filter_step</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span>
+    <span class="s2">"Filter Lists of Numbers"</span><span class="p">,</span>
+    <span class="n">input_path</span><span class="o">=</span><span class="s2">"$.list_of_number_lists"</span><span class="p">,</span>
+    <span class="n">result_path</span><span class="o">=</span><span class="s2">"$"</span>
+<span class="p">)</span>
+<span class="n">filter_step</span><span class="o">.</span><span class="n">add_branch</span><span class="p">(</span>
+    <span class="n">LambdaStep</span><span class="p">(</span>
+        <span class="n">state_id</span><span class="o">=</span><span class="s2">"Exclude Numbers GTE 50 from List of Numbers"</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"FunctionName"</span><span class="p">:</span> <span class="n">filter_function_name</span><span class="p">,</span>
+            <span class="s2">"Payload"</span><span class="p">:{</span>  
+               <span class="s2">"items.$"</span><span class="p">:</span><span class="s2">"$[0]"</span><span class="p">,</span>
+               <span class="s2">"threshold"</span><span class="p">:</span> <span class="mi">50</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="n">filter_step</span><span class="o">.</span><span class="n">add_branch</span><span class="p">(</span>
+    <span class="n">LambdaStep</span><span class="p">(</span>
+        <span class="n">state_id</span><span class="o">=</span><span class="s2">"Exclude Numbers GTE 100 from List of Numbers"</span><span class="p">,</span>
+        <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">"FunctionName"</span><span class="p">:</span> <span class="n">filter_function_name</span><span class="p">,</span>
+            <span class="s2">"Payload"</span><span class="p">:{</span>  
+               <span class="s2">"items.$"</span><span class="p">:</span><span class="s2">"$[1]"</span><span class="p">,</span>
+               <span class="s2">"threshold"</span><span class="p">:</span> <span class="mi">100</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Average-Step">
+<a class="anchor" href="#Average-Step" aria-hidden="true"><span class="octicon octicon-link"></span></a>Average Step<a class="anchor-link" href="#Average-Step"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">average_step</span> <span class="o">=</span> <span class="n">LambdaStep</span><span class="p">(</span>
+    <span class="n">state_id</span><span class="o">=</span><span class="s2">"Average List of Numbers"</span><span class="p">,</span>
+    <span class="n">input_path</span><span class="o">=</span><span class="s2">"$.item.Payload"</span><span class="p">,</span>
+    <span class="n">result_path</span><span class="o">=</span><span class="s2">"$"</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"FunctionName"</span><span class="p">:</span> <span class="n">average_function_name</span><span class="p">,</span>
+        <span class="s2">"Payload"</span><span class="p">:{</span>  
+           <span class="s2">"items.$"</span><span class="p">:</span><span class="s2">"$"</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Decision-Step">
+<a class="anchor" href="#Decision-Step" aria-hidden="true"><span class="octicon octicon-link"></span></a>Decision Step<a class="anchor-link" href="#Decision-Step"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Step Function support <a href="https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html">Choice states</a> that can conditionally execute. In our example, if the resulting average is greater than 0 we take the square root otherwise usng the Pass State and leave the number alone.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">decision_step</span> <span class="o">=</span> <span class="n">Choice</span><span class="p">(</span>
+    <span class="n">state_id</span><span class="o">=</span><span class="s2">"Is Average &gt; 0?"</span>
+<span class="p">)</span>
+
+<span class="n">pass_step</span> <span class="o">=</span> <span class="n">Pass</span><span class="p">(</span>
+    <span class="n">state_id</span><span class="o">=</span><span class="s2">"Do Nothing"</span>             
+<span class="p">)</span>
+
+<span class="n">sqrt_step</span> <span class="o">=</span> <span class="n">LambdaStep</span><span class="p">(</span>
+    <span class="n">state_id</span><span class="o">=</span><span class="s2">"Square Root Number"</span><span class="p">,</span>
+    <span class="n">result_path</span><span class="o">=</span><span class="s2">"$"</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"FunctionName"</span><span class="p">:</span> <span class="n">sqrt_function_name</span><span class="p">,</span>
+        <span class="s2">"Payload"</span><span class="p">:{</span>  
+           <span class="s2">"item.$"</span><span class="p">:</span><span class="s2">"$.Payload.output"</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="n">decision_step</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span>
+    <span class="n">rule</span><span class="o">=</span><span class="n">ChoiceRule</span><span class="o">.</span><span class="n">NumericLessThan</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="n">average_step</span><span class="o">.</span><span class="n">output</span><span class="p">()[</span><span class="s2">"Payload"</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="n">next_step</span><span class="o">=</span><span class="n">pass_step</span>
+<span class="p">)</span>
+<span class="n">decision_step</span><span class="o">.</span><span class="n">add_choice</span><span class="p">(</span>
+    <span class="n">ChoiceRule</span><span class="o">.</span><span class="n">NumericGreaterThanEquals</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="n">average_step</span><span class="o">.</span><span class="n">output</span><span class="p">()[</span><span class="s2">"Payload"</span><span class="p">],</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+    <span class="n">next_step</span><span class="o">=</span><span class="n">sqrt_step</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Chain-average-step-and-decision-step">
+<a class="anchor" href="#Chain-average-step-and-decision-step" aria-hidden="true"><span class="octicon octicon-link"></span></a>Chain average step and decision step<a class="anchor-link" href="#Chain-average-step-and-decision-step"> </a>
+</h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The average and decision steps are executed sequentially. Through the iterator parameter, the <a href="https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-map-state.html">Map state</a> executes the average and decision steps sequentially for each list of numbers inputted to the Map step. The Map state is similar to the Parallel step because it executes its operations simulataneously but the key difference is the number of branches is dynamic and dependent on number of inputs specified in $$.Map.Item.Value.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">average_and_decision_chain</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">([</span><span class="n">average_step</span><span class="p">,</span> <span class="n">decision_step</span><span class="p">])</span>
+
+<span class="n">map_step</span> <span class="o">=</span> <span class="n">Map</span><span class="p">(</span>
+    <span class="n">state_id</span><span class="o">=</span><span class="s2">"Average Step"</span><span class="p">,</span>
+    <span class="n">result_path</span><span class="o">=</span><span class="s2">"$"</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">"item.$"</span><span class="p">:</span> <span class="s2">"$$.Map.Item.Value"</span>
+    <span class="p">},</span>
+    <span class="n">max_concurrency</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">iterator</span><span class="o">=</span><span class="n">average_and_decision_chain</span>
+<span class="p">)</span>
+
+
+
+<span class="n">succeess_step</span> <span class="o">=</span> <span class="n">Succeed</span><span class="p">(</span><span class="s2">"Pipeline Successful"</span><span class="p">)</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">([</span><span class="n">filter_step</span><span class="p">,</span> <span class="n">map_step</span><span class="p">,</span> <span class="n">succeess_step</span><span class="p">])</span>
+
+<span class="n">workflow</span> <span class="o">=</span> <span class="n">Workflow</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"Pipeline"</span><span class="p">,</span>
+    <span class="n">definition</span><span class="o">=</span><span class="n">pipeline</span><span class="p">,</span>
+    <span class="n">role</span><span class="o">=</span><span class="n">role_arn</span>
+<span class="p">)</span>
+
+
+<span class="n">workflow</span><span class="o">.</span><span class="n">render_graph</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+
+<link rel="stylesheet" type="text/css" href="https://do0of8uwbahzz.cloudfront.net/graph.css">
+<div id="graph-905" class="workflowgraph">
+    
+    <svg></svg>
+    
+</div>
+
+<script type="text/javascript">
+
+require.config({
+    paths: {
+        sfn: "https://do0of8uwbahzz.cloudfront.net/sfn",
+    }
+});
+
+require(['sfn'], function(sfn) {
+    var element = document.getElementById('graph-905')
+
+    var options = {
+        width: parseFloat(getComputedStyle(element, null).width.replace("px", "")),
+        height: 600,
+        layout: 'LR',
+        resizeHeight: true
+    };
+
+    var definition = {"StartAt": "Filter Lists of Numbers", "States": {"Filter Lists of Numbers": {"InputPath": "$.list_of_number_lists", "ResultPath": "$", "Type": "Parallel", "Next": "Average Step", "Branches": [{"StartAt": "Exclude Numbers GTE 50 from List of Numbers", "States": {"Exclude Numbers GTE 50 from List of Numbers": {"Parameters": {"FunctionName": "filter-numbers", "Payload": {"items.$": "$[0]", "threshold": 50}}, "Resource": "arn:aws:states:::lambda:invoke", "Type": "Task", "End": true}}}, {"StartAt": "Exclude Numbers GTE 100 from List of Numbers", "States": {"Exclude Numbers GTE 100 from List of Numbers": {"Parameters": {"FunctionName": "filter-numbers", "Payload": {"items.$": "$[1]", "threshold": 100}}, "Resource": "arn:aws:states:::lambda:invoke", "Type": "Task", "End": true}}}]}, "Average Step": {"ResultPath": "$", "Parameters": {"item.$": "$$.Map.Item.Value"}, "MaxConcurrency": 2, "Iterator": {"StartAt": "Average List of Numbers", "States": {"Average List of Numbers": {"InputPath": "$.item.Payload", "ResultPath": "$", "Parameters": {"FunctionName": "average-numbers", "Payload": {"items.$": "$"}}, "Resource": "arn:aws:states:::lambda:invoke", "Type": "Task", "Next": "Is Average > 0?"}, "Is Average > 0?": {"Type": "Choice", "Choices": [{"Variable": "$['Payload']", "NumericLessThan": 0, "Next": "Do Nothing"}, {"Variable": "$['Payload']", "NumericGreaterThanEquals": 0, "Next": "Square Root Number"}]}, "Do Nothing": {"Type": "Pass", "End": true}, "Square Root Number": {"ResultPath": "$", "Parameters": {"FunctionName": "sqrt-number", "Payload": {"item.$": "$.Payload.output"}}, "Resource": "arn:aws:states:::lambda:invoke", "Type": "Task", "End": true}}}, "Type": "Map", "Next": "Pipeline Successful"}, "Pipeline Successful": {"Type": "Succeed"}}};
+    var elementId = '#graph-905';
+
+    var graph = new sfn.StateMachineGraph(definition, elementId, options);
+    graph.render();
+});
+
+</script>
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Execute-Pipeline">
+<a class="anchor" href="#Execute-Pipeline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Execute Pipeline<a class="anchor-link" href="#Execute-Pipeline"> </a>
+</h3>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">if</span> <span class="ow">not</span> <span class="n">workflow</span><span class="o">.</span><span class="n">list_workflows</span><span class="p">():</span>
+    <span class="n">workflow</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="n">workflow_execution</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">"list_of_number_lists"</span><span class="p">:</span> <span class="p">[[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)],</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">)]]</span>
+<span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">([</span><span class="n">res</span><span class="p">[</span><span class="s2">"Payload"</span><span class="p">]</span> <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">workflow_execution</span><span class="o">.</span><span class="n">get_output</span><span class="p">()])</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[-73.61818181818182, -43.7037037037037]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Clean-Up">
+<a class="anchor" href="#Clean-Up" aria-hidden="true"><span class="octicon octicon-link"></span></a>Clean Up<a class="anchor-link" href="#Clean-Up"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">workflow</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">detach_response</span> <span class="o">=</span> <span class="n">iam_client</span><span class="o">.</span><span class="n">detach_role_policy</span><span class="p">(</span>
+    <span class="n">RoleName</span><span class="o">=</span><span class="n">role_name</span><span class="p">,</span>
+    <span class="n">PolicyArn</span><span class="o">=</span><span class="n">policy_arn</span>
+<span class="p">)</span>
+<span class="n">iam_client</span><span class="o">.</span><span class="n">delete_role</span><span class="p">(</span><span class="n">RoleName</span><span class="o">=</span><span class="n">role_name</span><span class="p">)</span>
+<span class="n">iam_client</span><span class="o">.</span><span class="n">delete_policy</span><span class="p">(</span><span class="n">PolicyArn</span><span class="o">=</span><span class="n">policy_arn</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{'ResponseMetadata': {'RequestId': '51033dd7-4bfb-43f2-bef0-224b33772dfc',
+  'HTTPStatusCode': 200,
+  'HTTPHeaders': {'x-amzn-requestid': '51033dd7-4bfb-43f2-bef0-224b33772dfc',
+   'content-type': 'text/xml',
+   'content-length': '204',
+   'date': 'Fri, 26 Jun 2020 23:25:45 GMT'},
+  'RetryAttempts': 0}}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">lambda_client</span><span class="o">.</span><span class="n">delete_function</span><span class="p">(</span><span class="n">FunctionName</span><span class="o">=</span><span class="n">filter_function_name</span><span class="p">)</span>
+<span class="n">lambda_client</span><span class="o">.</span><span class="n">delete_function</span><span class="p">(</span><span class="n">FunctionName</span><span class="o">=</span><span class="n">average_function_name</span><span class="p">)</span>
+<span class="n">lambda_client</span><span class="o">.</span><span class="n">delete_function</span><span class="p">(</span><span class="n">FunctionName</span><span class="o">=</span><span class="n">sqrt_function_name</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>{'ResponseMetadata': {'RequestId': '4454384d-0af9-4609-aab1-098107549581',
+  'HTTPStatusCode': 204,
+  'HTTPHeaders': {'date': 'Fri, 26 Jun 2020 23:25:47 GMT',
+   'content-type': 'application/json',
+   'connection': 'keep-alive',
+   'x-amzn-requestid': '4454384d-0af9-4609-aab1-098107549581'},
+  'RetryAttempts': 0}}</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="anishpdalal/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/aws/2020/06/26/serverless-data-pipeline.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p></p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/anishpdalal" title="anishpdalal"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/anishpdalal" title="anishpdalal"><svg class="svg-icon grey"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
