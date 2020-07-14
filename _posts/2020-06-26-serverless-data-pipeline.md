@@ -3,7 +3,7 @@ keywords: fastai
 description: "Tutorial of Step Functions Python SDK to build serverless data pipelines"
 title: Serverless Data Pipeline with AWS Step Functions
 toc: true
-badges: false
+badges: true
 comments: true
 author: Anish Dalal
 categories: [AWS]

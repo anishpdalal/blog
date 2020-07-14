@@ -2,13 +2,24 @@
 layout: page
 title: About Me
 permalink: /about/
-published: false
+published: true
 ---
 
-This is where you put the contents of your *About* page. Like all your pages, it's in [Markdown](https://guides.github.com/features/mastering-markdown/) format.
+I'm a Machine Learning Engineer at <a href="https://manifold.ai" target="_blank">Manifold</a> where I build production ML systems for healthcare and telecommunication companies. Previously I worked in cancer genetics, and the field taught me that data and predictions in of themselves do not matter. Knowing the right data to show a user and acting on a ML prediction in a useful way makes or breaks a data product. I try to bring this type of product thinking to my work and consider myself fortunate to work in an area whose bleeding edge is rapidly progressing while at the same time the best practices are being worked out.
 
-This website is powered by **[fastpages](https://github.com/fastai/fastpages)** [^1].
+When I'm not writing code and doing ML related stuff, I mainly
 
+**Read**
+* Health tech and biotech industry
+* Biographies of great scientists and engineers
+* Long-form sports content especially about novel winning strategies teams employ
+* Product thinking
+* WW2 History
+* Antifragility
+* Stoicism
 
+**Play Sports**
+* Tennis
+* Trying to suck less at golf
+* Biking
 
-[^1]:a blogging platform that natively supports Jupyter notebooks in addition to other formats.
