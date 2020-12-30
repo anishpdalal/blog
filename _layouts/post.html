@@ -57,6 +57,12 @@ layout: default
   <div class="post-content e-content" itemprop="articleBody">
     {{ content | toc  }}
   </div>
+  <hr>
+  <center>
+    <h3><b>Want to get blog posts through email?</b></h3>
+    <p>Enter your email address and get an email when there's a new post!</p>
+  </center>
+  {%- include convertkit.html -%}
   {%- if page.comments -%}
     {%- include utterances.html -%}
   {%- endif -%}

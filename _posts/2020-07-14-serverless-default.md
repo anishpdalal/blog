@@ -1,6 +1,6 @@
 ---
 layout: post
-comments: true
+comments: false
 description: Leverage robots in the cloud so you can focus on what matters
 categories: [Serverless, AWS]
 title: Serverless Backends Should Be the Default
