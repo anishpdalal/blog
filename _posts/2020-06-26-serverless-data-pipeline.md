@@ -20,13 +20,6 @@ layout: notebook
 
 <div class="container" id="notebook-container">
         
-    {% raw %}
-    
-<div class="cell border-box-sizing code_cell rendered">
-
-</div>
-    {% endraw %}
-
 <div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Quick-Summary">Quick Summary<a class="anchor-link" href="#Quick-Summary"> </a></h2>
@@ -260,8 +253,7 @@ layout: notebook
 
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Helper Function to encode python file into byte string for creating Lambda functions</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">BytesIO</span>
 
 <span class="n">lambda_client</span> <span class="o">=</span> <span class="n">boto3</span><span class="o">.</span><span class="n">client</span><span class="p">(</span><span class="s1">&#39;lambda&#39;</span><span class="p">)</span>
