@@ -4,6 +4,7 @@ comments: false
 description: Narrow the search space for data insights
 categories: [Machine Learning]
 title: Model-Driven Exploratory Data Analysis
+published: false
 ---
 Exploratory Data Analysis (EDA) is frequently the first step in any ML project. But the term EDA is too open-ended. It's difficult to know what to explore, how much to explore, and what's insightful at the very beginning stages of a project. 
 

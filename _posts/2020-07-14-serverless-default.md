@@ -4,6 +4,7 @@ comments: false
 description: Leverage robots in the cloud so you can focus on what matters
 categories: [Serverless, AWS]
 title: Serverless Backends Should Be the Default
+published: false
 ---
 
 The next time you build a new product or service you should seriously consider serverless offerings from vendors such as AWS. Why? I've shipped two products on time using serverless tech and so far it's been great from a cost and maintenance perspective. According to a post by Datadog, about half the companies that use AWS infrastructure have adopted AWS Lambda.<sup>1</sup> I'm not surprised. These types of services let developers focus on quickly shipping product differentiating code. 
